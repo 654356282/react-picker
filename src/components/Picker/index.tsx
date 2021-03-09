@@ -41,7 +41,8 @@ interface IRecord {
 }
 
 function claimsSpeed(x: number) {
-  return Math.min(Math.max(x, -0.25), 0.25)
+  return x
+  // return Math.min(Math.max(x, -0.25), 0.25)
 }
 
 function PanelPicker({
