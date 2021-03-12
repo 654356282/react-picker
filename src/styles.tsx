@@ -1,4 +1,5 @@
-import styled, { createGlobalStyle } from "styled-components"
+import styled from "styled-components"
+import { createGlobalStyle } from "styled-components"
 
 const winW = window.innerWidth
 
@@ -7,18 +8,19 @@ export function vw(x: number) {
 }
 
 export function vpx(x: number) {
-  return `${(x / 750) * winW}px`
+  return `${px(x)}px`
+}
+
+export function px(x: number) {
+  return (x / 750) * winW
 }
 
 export const Panel = styled.div`
   position: fixed;
   bottom: 0;
   left: 0;
-  top: 0;
-  right: 0;
-  margin: auto;
   width: 100vw;
-  background-color: red;
+  background-color: white;
   height: ${(p: { height: number }) => vpx(p.height)};
 `
 
@@ -32,10 +34,33 @@ export const Header = styled.div`
 
 export const GlobalStyle = createGlobalStyle`
 html, body {
-  background-color: blue;
   height: 100vh;
   width: 100vw;
   margin: 0;
+}
+.slide-in-appear {
+transform: translateY(100%);
+}
+.slide-in-appear-active, .slide-in-appear-done {
+transform: translateY(0);
+transition: transform 300ms;
+}
+.slide-in-enter {
+transform: translateY(100%);
+}
+.slide-in-enter-active, .slide-in-enter-done {
+transform: translateY(0);
+transition: transform 300ms;
+}
+.slide-in-exit {
+transform: translateY(0);
+}
+.slide-in-exit-active, .slide-in-exit-done {
+transform: translateY(100%);
+transition: transform 300ms;
+}
+.slide-in-exit-done {
+visibility: hidden;
 }
 `
 
@@ -49,11 +74,31 @@ export const Content = styled.div`
   overflow: hidden;
 `
 
+export const LinearBox = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  background: linear-gradient(
+        0deg,
+        hsla(0, 0%, 100%, 0.4),
+        hsla(0, 0%, 100%, 0.9)
+      )
+      no-repeat top/100%
+      ${(p: { height: number; itemHeight: number }) =>
+        vpx((p.height * 0.9) / 2 - p.itemHeight / 2)},
+    linear-gradient(180deg, hsla(0, 0%, 100%, 0.4), hsla(0, 0%, 100%, 0.9))
+      no-repeat bottom center/ 100%
+      ${(p: { height: number; itemHeight: number }) =>
+        vpx((p.height * 0.9) / 2 - p.itemHeight / 2)};
+`
+
 export const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  //justify-content: center;
   width: 100%;
   height: 100%;
 `
@@ -81,6 +126,14 @@ export const Text = styled.div`
   vertical-align: top;
 `
 
+export const Cancel = styled(Text)`
+  margin-left: ${vw(20)};
+`
+
+export const Confirm = styled(Text)`
+  margin-right: ${vw(20)};
+`
+
 export const OffsetContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -95,10 +148,11 @@ export const ChooseArea = styled.div`
   left: 0;
   width: 100%;
   height: ${(p: { height: number }) => vpx(p.height)};
-  background-color: white;
   border-top: 1px solid black;
   border-bottom: 1px solid black;
   pointer-events: none;
+  background-color: #eeeded;
+  border-color: rgba(0, 0, 0, 0.1);
 `
 
 export const List = styled.div`

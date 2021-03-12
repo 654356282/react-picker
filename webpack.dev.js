@@ -1,11 +1,12 @@
 const path = require("path")
 const webpack = require("webpack")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
   mode: "development",
   entry: [
     "react-hot-loader/patch",
-    path.resolve(__dirname, "src/index.tsx"),
+    path.resolve(__dirname, "src/Picker.tsx"),
     path.resolve(__dirname, "public/index.html"),
   ],
   devServer: {
@@ -14,18 +15,30 @@ module.exports = {
     port: 9000,
     open: true,
     hot: true,
-    host: "0.0.0.0",
+    quiet: true,
   },
   output: {
     filename: "[name].[contenthash:5].js",
     path: path.resolve(__dirname, "dist"),
   },
-  plugins: [new webpack.HotModuleReplacementPlugin({})],
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "public/index.html"),
+      filename: "index.html",
+    }),
+    new webpack.HotModuleReplacementPlugin({}),
+  ],
   module: {
     rules: [
       {
         test: /\.tsx$/,
-        use: [{ loader: "babel-loader" }, { loader: "ts-loader" }],
+        use: [
+          {
+            loader: "babel-loader",
+            options: { plugins: ["react-hot-loader/babel"] },
+          },
+          { loader: "ts-loader" },
+        ],
       },
       {
         test: /\.scss$/,

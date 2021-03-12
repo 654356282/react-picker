@@ -3,16 +3,37 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 
 module.exports = {
-  mode: "production",
+  entry: path.resolve(__dirname, "src/index.tsx"),
+  mode: "development",
   output: {
     filename: "index.js",
     path: path.resolve(__dirname, "dist"),
+    libraryTarget: "umd",
+    libraryExport: "default",
+    library: "dist",
   },
+  watch: true,
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: [{ loader: "ts-loader" }],
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env"],
+              plugins: [
+                [
+                  "@babel/plugin-transform-runtime",
+                  {
+                    corejs: 3,
+                  },
+                ],
+              ],
+            },
+          },
+          { loader: "ts-loader" },
+        ],
         exclude: /node_modules/,
       },
       {
@@ -33,10 +54,6 @@ module.exports = {
         ],
       },
     ],
-  },
-  externals: {
-    react: "React",
-    "react-dom": "ReactDOM",
   },
   plugins: [new MiniCssExtractPlugin(), new CleanWebpackPlugin()],
 }

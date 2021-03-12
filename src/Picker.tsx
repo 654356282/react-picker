@@ -1,37 +1,48 @@
-import React, { useEffect, useRef, useState } from "react"
+import * as React from "react"
+import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
+import { CSSTransition } from "react-transition-group"
 import {
+  Cancel,
   ChooseArea,
+  Confirm,
   Content,
   GlobalStyle,
   Header,
   Item,
+  LinearBox,
   List,
   ListContainer,
   OffsetContainer,
   Panel,
   Text,
-  vpx,
+  px,
 } from "./styles"
-import defaultData, { ICascadeData, IInCascadeData } from "@/data"
+import { ICascadeData, IInCascadeData } from "@/data"
 
-function px(x: number) {
-  return Number(vpx(x).slice(0, -2))
-}
+const modalDom = document.createElement("div")
+modalDom.style.position = "absolute"
+modalDom.style.top = "0"
+modalDom.style.left = "0"
+modalDom.id = "chiyu_react_modal"
+document.body.appendChild(modalDom)
 
 function calibrateValue(min: number, x: number, max: number) {
   return Math.min(Math.max(min, x), max)
 }
 
 interface IPanelPicker {
-  data?: ICascadeData[] | IInCascadeData[][]
+  open: boolean
+  onCancel: () => void
+  data: ICascadeData[] | IInCascadeData[][]
+  cols: number
+  cascade: boolean
   height?: number
   itemHeight?: number
   onStart?: () => void
   onMove?: () => void
   onEnd?: () => void
-  cols?: number
-  cascade?: boolean
-  onChange?: () => void
+  onChange?: (selectedValues: number[]) => void
 }
 
 interface IRecord {
@@ -46,22 +57,24 @@ function claimsSpeed(x: number) {
 }
 
 function PanelPicker({
-  data = defaultData,
+  data,
   height = 600,
   itemHeight = 60,
-  cols = 2,
+  cols,
   onChange,
   onEnd,
   onMove,
   onStart,
-  cascade = true,
+  cascade,
+  open,
+  onCancel,
 }: IPanelPicker) {
   const listDom = useRef<HTMLDivElement[]>([])
   const [curPosY, setCurPosY] = useState([0, 0, 0])
 
   const { current: record } = useRef<IRecord[]>([])
   const [selectedValues, setSelectedValues] = useState(() => {
-    return new Array(cols).fill(0)
+    return new Array(cols).fill(0) as number[]
   })
 
   const midLineTop = 0
@@ -170,14 +183,29 @@ function PanelPicker({
     })
   }
 
-  function calibrationRun(i: number) {
-    const curRecord = record[i]
+  function getDataLen(cols: number): number {
+    if (cascade) {
+      let dataLen = 0
+      let tmpData = data as ICascadeData[]
+      for (let i = 0; i < cols; i++) {
+        dataLen = tmpData.length
+        tmpData = tmpData[selectedValues[i]].children
+      }
+      return dataLen
+    }
+    let tmpData = data as IInCascadeData[][]
+    return tmpData[cols].length
+  }
+
+  function calibrationRun(cols: number) {
+    const curRecord = record[cols]
 
     const speed = 0.8
     const sign = Math.sign(curRecord.lastDiff)
-    const dataLen = data.length
+    const dataLen = getDataLen(cols)
     let idx =
       (Math.abs(curRecord.currentTop) / px(dataLen * itemHeight)) * dataLen
+    console.log(idx)
 
     if (Math.abs(idx * 10 - parseInt(idx.toString()) * 10) > 5) {
       if (sign > 0) {
@@ -199,21 +227,21 @@ function PanelPicker({
         } else {
           base = 1
         }
-        animationId[i] = requestAnimationFrame(run)
+        animationId[cols] = requestAnimationFrame(run)
         curRecord.currentTop += base * speed
         if (Math.abs(curRecord.currentTop - disPos) <= px(1)) {
           curRecord.currentTop = disPos
-          changeCurPosY(i, curRecord.currentTop)
-          cancelAnimationFrame(animationId[i])
+          changeCurPosY(cols, curRecord.currentTop)
+          cancelAnimationFrame(animationId[cols])
           resolve(idx)
           onMove && onMove()
           return
         }
-        changeCurPosY(i, curRecord.currentTop)
+        changeCurPosY(cols, curRecord.currentTop)
         onMove && onMove()
       }
 
-      animationId[i] = requestAnimationFrame(run)
+      animationId[cols] = requestAnimationFrame(run)
     })
   }
 
@@ -230,20 +258,23 @@ function PanelPicker({
     idx: number
   ) {
     await inertiaRun(idx)
-    console.log("end")
     const selectedV = await calibrationRun(idx)
-    for (let i = idx + 1; i < cols; i++) {
-      resetCols(i)
+    if (cascade) {
+      for (let i = idx + 1; i < cols; i++) {
+        resetCols(i)
+      }
     }
     changeSelectedValues(idx, selectedV)
     onEnd && onEnd()
   }
 
   function handleConfirm() {
-    onChange && onChange()
+    onChange && onChange(selectedValues)
   }
 
-  function handleCancel() {}
+  function handleCancel() {
+    onCancel && onCancel()
+  }
 
   const columns = ((): JSX.Element[] => {
     let lists: JSX.Element[] = []
@@ -256,12 +287,11 @@ function PanelPicker({
       return lists
     }
     lists.push(genListContainer(data as ICascadeData[], "0", 0))
-    if (cascade) {
-      let tmp = data as ICascadeData[]
-      for (let i = 1; i < cols; i++) {
-        tmp = (data[selectedValues[i - 1]] as ICascadeData).children
-        lists.push(genListContainer(tmp, i.toString(), i))
-      }
+    let tmp = data as ICascadeData[]
+
+    for (let i = 1; i < cols; i++) {
+      tmp = tmp[selectedValues[i - 1]].children
+      lists.push(genListContainer(tmp, i.toString(), i))
     }
     return lists
   })()
@@ -290,20 +320,30 @@ function PanelPicker({
     )
   }
 
-  return (
-    <Panel height={height}>
-      <Header>
-        <Text onClick={handleCancel}>取消</Text>
-        <Text onClick={handleConfirm}>确定</Text>
-      </Header>
-      <Content>
-        <OffsetContainer height={height} itemHeight={itemHeight}>
-          <ChooseArea height={itemHeight} />
-          {columns}
-        </OffsetContainer>
-      </Content>
-      <GlobalStyle />
-    </Panel>
+  return createPortal(
+    <CSSTransition
+      classNames={"slide-in"}
+      mountOnEnter={true}
+      timeout={300}
+      in={open}
+      appear={true}
+    >
+      <Panel height={height}>
+        <Header>
+          <Cancel onClick={handleCancel}>取消</Cancel>
+          <Confirm onClick={handleConfirm}>确定</Confirm>
+        </Header>
+        <Content>
+          <OffsetContainer height={height} itemHeight={itemHeight}>
+            <ChooseArea height={itemHeight} />
+            {columns}
+          </OffsetContainer>
+          <LinearBox height={height} itemHeight={itemHeight} />
+        </Content>
+        <GlobalStyle />
+      </Panel>
+    </CSSTransition>,
+    modalDom
   )
 }
 

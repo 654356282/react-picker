@@ -1,9 +1,8 @@
 const path = require("path")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
 const webpack = require("webpack")
 
 module.exports = {
-  entry: path.resolve(__dirname, "src/index.tsx"),
+  entry: path.resolve(__dirname, "src/Picker.tsx"),
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"],
     alias: {
@@ -26,11 +25,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new webpack.ProgressPlugin(),
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, "public/index.html"),
-      filename: "index.html",
-    }),
-  ],
+  plugins: [new webpack.ProgressPlugin()],
 }

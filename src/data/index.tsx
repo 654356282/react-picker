@@ -16,20 +16,20 @@ const words = [
 ]
 
 export type IInCascadeData = {
-  key: number
+  key: number | string
   data: string
   label: string
 }
 
 export type ICascadeData = {
-  key: number
-  data: string
+  key: number | string
+  data: any
   children: ICascadeData[]
-  label: string
+  label: string | number
 }
-const defaultData: ICascadeData[] = []
+const cascadeData: ICascadeData[] = []
 words.forEach((item, idx) => {
-  defaultData.push({
+  cascadeData.push({
     key: idx,
     data: item,
     children: [],
@@ -37,14 +37,57 @@ words.forEach((item, idx) => {
   })
   let tmp: ICascadeData[] = []
   for (let i = 0; i < 6; i++) {
-    tmp.push({
+    let tmpData: ICascadeData = {
       key: i,
       data: item + i,
-      children: [],
+      children: [
+        {
+          key: 0,
+          data: item + i + "-" + 0,
+          children: [],
+          label: item + i + "-" + 0,
+        },
+        {
+          key: 1,
+          data: item + i + "-" + 1,
+          children: [],
+          label: item + i + "-" + 1,
+        },
+      ],
       label: item + i,
-    })
+    }
+    tmp.push(tmpData)
   }
-  defaultData[idx].children = tmp
+  cascadeData[idx].children = tmp
 })
 
-export default defaultData
+const inCascadeData: IInCascadeData[][] = []
+inCascadeData.push(
+  words.map((item, idx) => {
+    return {
+      key: idx,
+      data: item,
+      label: item,
+    }
+  })
+)
+inCascadeData.push(
+  words.map((item, idx) => {
+    return {
+      key: idx + "-1",
+      data: item + "-1",
+      label: item + "-1",
+    }
+  })
+)
+inCascadeData.push(
+  words.map((item, idx) => {
+    return {
+      key: idx + "-2",
+      data: item + "-2",
+      label: item + "-2",
+    }
+  })
+)
+
+export { cascadeData, inCascadeData }
