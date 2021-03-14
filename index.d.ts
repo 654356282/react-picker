@@ -1,5 +1,19 @@
 import * as React from "react"
-import { ICascadeData, IInCascadeData } from "./dist/data"
+
+export declare type IInCascadeData = {
+  key: number | string
+  data: string
+  label: string
+}
+export declare type ICascadeData = {
+  key: number | string
+  data: any
+  children: ICascadeData[]
+  label: string | number
+}
+declare const cascadeData: ICascadeData[]
+declare const inCascadeData: IInCascadeData[][]
+
 interface IPanelPicker {
   open: boolean
   onCancel: () => void

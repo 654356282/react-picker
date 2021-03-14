@@ -1,7 +1,6 @@
 const path = require("path")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
   entry: path.resolve(__dirname, "src/index.tsx"),
@@ -17,13 +16,13 @@ module.exports = {
       {
         test: /\.tsx?$/,
         use: [
-          // {
-          //   loader: "babel-loader",
-          //   options: {
-          //     presets: [["@babel/preset-env"]],
-          //     plugins: [["@babel/plugin-transform-runtime", { corejs: 3 }]],
-          //   },
-          // },
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [["@babel/preset-env"]],
+              plugins: [["@babel/plugin-transform-runtime", { corejs: 3 }]],
+            },
+          },
           { loader: "ts-loader" },
         ],
         exclude: [/node_modules/, /example/],
@@ -47,14 +46,7 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new MiniCssExtractPlugin(),
-    new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, "public/index.html"),
-      filename: "index.html",
-    }),
-  ],
+  plugins: [new MiniCssExtractPlugin(), new CleanWebpackPlugin()],
   externals: {
     react: {
       root: "React",
