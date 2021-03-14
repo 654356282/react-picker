@@ -1,7 +1,7 @@
 {
-  "name": "@654356282/react-picker",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@chiyu/react-picker",
+  "version": "1.0.1",
+  "description": "react scroll picker",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "typings": "./index.d.ts",
@@ -10,7 +10,7 @@
     "start": "webpack serve --config ./webpack.config.js --config ./webpack.dev.js --merge",
     "build": "webpack --config ./webpack.config.js --config ./webpack.prod.js --merge"
   },
-  "author": "",
+  "author": "654356282",
   "license": "ISC",
   "dependencies": {
     "emitter": "^0.0.5",
@@ -30,12 +30,14 @@
     "@types/node": "^14.14.32",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.1",
+    "@types/react-hot-loader": "^4.1.1",
     "@types/react-transition-group": "^4.4.1",
     "@types/styled-components": "^5.1.7",
     "@types/webpack-env": "^1.16.0",
-    "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.2.2",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "clean-webpack-plugin": "^3.0.0",
+    "core-js": "3",
     "cross-env": "^7.0.3",
     "css-loader": "^5.1.1",
     "eslint": "^7.21.0",
@@ -63,5 +65,18 @@
   "peerDependencies": {
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/654356282/react-picker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/654356282/react-picker/issues"
+  },
+  "keywords": [
+    "react",
+    "react picker",
+    "scroll picker"
+  ],
+  "homepage": "https://github.com/654356282/react-picker"
 }

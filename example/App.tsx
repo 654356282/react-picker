@@ -1,7 +1,7 @@
 import { hot } from "react-hot-loader/root"
-import PanelPicker from "../src/Picker"
+import PanelPicker from "@/index"
 import React, { useState } from "react"
-import { cascadeData, inCascadeData } from "../src/data"
+import { cascadeData, inCascadeData } from "@/data"
 
 const App = () => {
   const [open, setOpen] = useState(false)

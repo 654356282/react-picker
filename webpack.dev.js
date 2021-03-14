@@ -6,7 +6,7 @@ module.exports = {
   mode: "development",
   entry: [
     "react-hot-loader/patch",
-    path.resolve(__dirname, "src/Picker.tsx"),
+    path.resolve(__dirname, "example/index.tsx"),
     path.resolve(__dirname, "public/index.html"),
   ],
   devServer: {
