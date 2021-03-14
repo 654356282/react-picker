@@ -13,13 +13,10 @@ const App = () => {
       <PanelPicker
         onChange={handleChange}
         cols={3}
-        data={inCascadeData}
-        cascade={false}
-        height={400}
-        itemHeight={100}
+        data={cascadeData}
+        cascade={true}
         open={open}
         onCancel={() => {
-          console.log(1)
           setOpen(false)
         }}
       />

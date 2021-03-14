@@ -187,7 +187,7 @@ function PanelPicker({
     if (cascade) {
       let dataLen = 0
       let tmpData = data as ICascadeData[]
-      for (let i = 0; i < cols; i++) {
+      for (let i = 0; i <= cols; i++) {
         dataLen = tmpData.length
         tmpData = tmpData[selectedValues[i]].children
       }
@@ -205,7 +205,6 @@ function PanelPicker({
     const dataLen = getDataLen(cols)
     let idx =
       (Math.abs(curRecord.currentTop) / px(dataLen * itemHeight)) * dataLen
-    console.log(idx)
 
     if (Math.abs(idx * 10 - parseInt(idx.toString()) * 10) > 5) {
       if (sign > 0) {
